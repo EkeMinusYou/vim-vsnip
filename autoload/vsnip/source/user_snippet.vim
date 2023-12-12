@@ -40,14 +40,17 @@ endfunction
 "
 function! s:get_source_paths(bufnr) abort
   let l:filetypes = vsnip#source#filetypes(a:bufnr)
+  let l:valid_extensions = ['json', 'code-snippets']
 
   let l:paths = []
   for l:dir in s:get_source_dirs(a:bufnr)
     for l:filetype in l:filetypes
-      let l:path = resolve(expand(printf('%s/%s.json', l:dir, l:filetype)))
-      if has_key(s:cache, l:path) || filereadable(l:path)
-        call add(l:paths, l:path)
-      endif
+      for l:ext in l:valid_extensions
+        let l:path = resolve(expand(printf('%s/%s.%s', l:dir, l:filetype, l:ext)))
+        if has_key(s:cache, l:path) || filereadable(l:path)
+          call add(l:paths, l:path)
+        endif
+      endfor
     endfor
   endfor
   return l:paths
